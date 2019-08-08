@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Header,Checkbox, Button,Table, TableBody} from "semantic-ui-react";
+import { Header,Checkbox, Button,Table, TableBody,Confirm} from "semantic-ui-react";
 import 'semantic-ui/dist/semantic.min.css';
 import axios from 'axios'
 import URLs from '../../../config'
@@ -10,15 +10,53 @@ class AdminPayment extends Component{
         this.state={
         adminObject: undefined,
         }
-        this.state = { selectedRowId : '' };
+        this.state = { email : '' };
+        this.state = { id : '' };
+        this.state = { duedate : '' };
+        this.state = { amount : '' };
+        this.state = { open: false} ;
+        this.state = {result: '0' }
+        
+        
       }
         componentDidMount(){
-            axios.get(URLs.baseURL + URLs.Invoices.url).then((adminData)=>{
+            axios.get('https://4aaa8b4a.ngrok.io/invoice/view').then((adminData)=>{
+           
             this.setState({adminObject: adminData.data})
             })
             }
 
+        mySliderHandler = (event,invoiceid)=>
+        {
+         
+          event.preventDefault();
+          console.log(invoiceid)
+          //this.myConfirmHadler.show();
+          //this.myConfirmHadler();
+          
+          
+        }
+        myConfirmHadler = ()=>
+        {
+          return(
+            <Confirm open={this.state.open} onCancel={this.handleCancel} onConfirm={this.handleConfirm} />
+          )
+        }
+
+        show = () => this.setState({ open: true })
+        handleConfirm = () => 
+        {
+        this.setState({ result: '1', open: false })
+        console.log(this.state.result);
+        }
+        handleCancel = () => this.setState({ result: '0', open: false })
+        
+        
+
+
     render(){
+
+        const { open, result } = this.state
 
          let {adminObject} = this.state;
 
@@ -45,12 +83,12 @@ class AdminPayment extends Component{
                         <TableBody>
                             <Table.Row>
                 
-                              <Table.Cell>{obj.vendorname}</Table.Cell>        
-                              <Table.Cell>{obj.invoicenum}</Table.Cell>
+                              <Table.Cell>{obj.email}</Table.Cell>        
+                              <Table.Cell>{obj.id}</Table.Cell>
                               <Table.Cell>{obj.duedate}</Table.Cell>
                               <Table.Cell>{obj.amount}</Table.Cell>
                               <Table.Cell>
-                                <Checkbox slider />
+                                <Checkbox slider onChange={(e)=>this.mySliderHandler(e,obj.id)}/>
                               </Table.Cell>
                             </Table.Row>
                         </TableBody>
@@ -61,8 +99,7 @@ class AdminPayment extends Component{
             
             <Table.Footer>
               <Table.Row>
-                <Table.HeaderCell>8 Invoices</Table.HeaderCell>
-                <Table.HeaderCell>3 Paid</Table.HeaderCell>
+                <Table.HeaderCell>n Unpaid Invoices</Table.HeaderCell>
               </Table.Row>
             </Table.Footer>
           </div>

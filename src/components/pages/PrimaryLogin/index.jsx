@@ -11,14 +11,14 @@ class PrimaryLogin extends Component{
         this.state = { vpass : '' };
         this.state = { aemail : '' };
         this.state = { status : '0' };
-       
+        this.state = { email : '' };
         
              }
              
       mySubmitHandler = (event) => {
         event.preventDefault();
   
-        axios.post('https://d09156f8.ngrok.io/vendor/vmail',this.state).then(response=>
+        axios.post('https://6ea3609e.ngrok.io/vendor/vmail',this.state).then(response=>
         {   
             //alert(response.data)
             this.setState({status : response.data })
@@ -64,22 +64,37 @@ class PrimaryLogin extends Component{
       this.setState({aemail: event.target.value});
       }
 
+      myChangeHandler4= (event) =>{
+        this.setState({email: event.target.value});
+        }
+
+
       mySubmitHandler2 = (event) =>{
           event.preventDefault();
 
-            axios.get('https://d09156f8.ngrok.io/admin/email/'+this.state.aemail).then((adminData)=>{
+            axios.get('https://7b9f15c7.ngrok.io/admin/email/'+this.state.aemail).then((adminData)=>{
             console.log(adminData.data);
             this.setState({status: adminData.data.status})
             //alert(adminData.data[0].status)
             if(adminData.data[0].status==1)
             {
-               this.setState({
-                   redirect : true
+                this.props.history.push({
+                    pathname: '/',
+                    state : {email : this.state.aemail}
                })
+               
             }
-            
+            else{
+                alert("Not Admin!")
+            }
       }   )
       }  
+
+      mySubmitHandler3 = (event) => {
+        event.preventDefault();
+        axios.post('https://6ea3609e.ngrok.io/admin/save',this.state)
+      }
+
     render(){
         
         return(
@@ -104,11 +119,21 @@ class PrimaryLogin extends Component{
           <Form onSubmit={this.mySubmitHandler2}>
              <Header as='h4' color='teal' textAlign="center">
              <Icon name="sign in alternate"/>
-                 Admin Login/Request
+                 Admin Login
              </Header>
-             <Form.Input required icon='user secret' iconPosition='left' label='Admin' placeholder='Admin email' onChange={this.myChangeHandler3}/>
+             <Form.Input required icon='user secret' iconPosition='left' label='Admin Email' placeholder='Admin email' onChange={this.myChangeHandler3}/>
              {this.renderRedirect()}
-             <Button style={{backgroundColor:"lime"}} content='verify' icon='check square' size='medium' />
+             <Button style={{backgroundColor:"lime"}} content='Verify' icon='check square' size='medium' />
+         </Form>
+         <Form onSubmit={this.mySubmitHandler3}>
+             <div></div>
+             
+         <Header as='h4' color='teal' textAlign="center">
+             <Icon name="angle double right"/>
+                 Admin Request
+             </Header>
+         <Form.Input required icon='plus square' iconPosition='left' label='Email Address' placeholder='Enter email' onChange={this.myChangeHandler4}/>
+         <Button style={{backgroundColor:"grey"}} content='Request' icon='hourglass' size='medium' />    
          </Form>
       </Grid.Column>
     </Grid>
