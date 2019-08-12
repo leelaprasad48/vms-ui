@@ -20,7 +20,7 @@ class AdminPayment extends Component{
         
       }
         componentDidMount(){
-            axios.get('https://4aaa8b4a.ngrok.io/invoice/view').then((adminData)=>{
+            axios.get('https://2e75e23a.ngrok.io/invoice/view').then((adminData)=>{
            
             this.setState({adminObject: adminData.data})
             })

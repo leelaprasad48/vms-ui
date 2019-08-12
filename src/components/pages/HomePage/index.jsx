@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Button, Divider, Header, Grid, Icon } from 'semantic-ui-react';
+import { Button, Divider, Header, Grid, Icon, Form, Segment } from 'semantic-ui-react';
 import 'semantic-ui/dist/semantic.min.css';
 import {Image} from 'semantic-ui-react';
 import GoogleLogin from 'react-google-login'
@@ -29,35 +29,80 @@ import axios from 'axios'
 class HomePage extends Component{
   constructor(props){
   super(props);
+  this.state = { vmail : '' };
+  this.state = { vpass : '' };
   this.responseGoogle=this.responseGoogle.bind(this);
 }
+
+mySubmitHandler = (event) => {
+  event.preventDefault();
+  axios.post('https://6ea3609e.ngrok.io/vendor/vmail',this.state).then(response=>
+  {   
+      //alert(response.data)
+      this.setState({status : response.data })
+
+         if(this.state.status==true)
+              {
+                this.props.history.push({
+                    pathname: '/VendorHome',
+                    state : {email : this.state.vmail}
+                })
+               
+              }
+         else
+              {
+               alert("Wrong Credentials")
+              }        
+  })
+  
+}
+
+      myChangeHandler = (event) => {
+      this.setState({vmail: event.target.value});
+    }
+
+      myChangeHandler2 = (event) => {
+      this.setState({vpass: event.target.value});
+}   
+
 
   responseGoogle= (response) => {
     console.log(response.profileObj)
     var email=response.profileObj.email;
     var adminDetails = {};
     adminDetails['email'] =  email;
-    axios.post('https://1e882d3c.ngrok.io/admin/email',adminDetails).then(response=>
+    axios.post('https://db5b431d.ngrok.io/admin/email',adminDetails).then(response=>
     {   
         alert(JSON.stringify(response.data));
-        this.setState({status : response.data[0].status })
-        alert('State Alert:'+this.state.status);
         
-        if(this.state.status==1)
+        this.setState({status : response.data[0].status })
+        //alert('State Alert:'+this.state.status);
+
+        //Checking admin status and redirecting appropriately.
+        if(this.state.status==2){
+          //alert("SuperAdmin")
+        }
+        else if(this.state.status==1)
                     {
                       this.props.history.push({
                           pathname: '/VendorHome',
                           state : {email : this.state.vmail}
                       }) 
                     }
-          else
+          else if(this.state.status==0)
                     {
-                     alert("Unauthorized for Admin Acces! Please request Super Admin.")
+                     alert("You are yet to be authorized as Admin by Super Admin.")
                     } 
-               
+        
   
     })
-    alert(JSON.stringify(adminDetails));
+
+    .catch(error => {
+      console.log('ERROR', error)
+      axios.post('https://db5b431d.ngrok.io/admin/saveadmin',adminDetails)
+      alert("Your Request for Admin Access has been submitted to the SuperAdmin.!")
+    })
+    
     console.log(adminDetails);
   }
     render(){
@@ -69,11 +114,25 @@ class HomePage extends Component{
             <div>
               <Header textAlign="center" color="teal" as='h3' block> Vendor Management System</Header>
             </div>
-            <div> 
+            <div>
+               
               <Grid columns={2} relaxed='very' stackable size='massive'>
-                    <Grid.Column >
-                        <Image src='https://d1hbpr09pwz0sk.cloudfront.net/logo_url/nineleaps-technology-solutions-pvt-ltd-35904afd' size='massive' />
+              
+                  <Grid.Column >
+                    <Form onSubmit={this.mySubmitHandler}>
+                    <div>        
+                <Header as='h4' color='teal' textAlign="center">
+                <Icon name="sign in alternate"/>
+                Vendor Login
+                   </Header>
+                       <Form.Input required icon='user' iconPosition='left' label='Username' placeholder='Username' onChange={this.myChangeHandler}/>
+                       <Form.Input required icon='lock' iconPosition='left' label='Password' type='password' onChange={this.myChangeHandler2}/>
+    
+                        <Button content='Login' primary />
+                        </div>
+                      </Form>                      
                     </Grid.Column>
+                   
                       <div><div>
                         <GoogleLogin
                         clientId="512964282293-l8jstgcnlvj6g761gahmnbmro1nhlj8v.apps.googleusercontent.com"

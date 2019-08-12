@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom'
 import { Button, Divider, Form, Grid} from 'semantic-ui-react';
 import axios from 'axios'
+import FileBase64 from 'react-file-base64';
 import DatePicker from 'react-date-picker';
 
 class Invupl extends Component{
@@ -13,12 +14,21 @@ class Invupl extends Component{
         this.state = { duedate : '' };
         this.state = { amount : '' };
         this.state = { invoicedoc : '' };
-        
+        this.state = { email : 'someone@something.com'};
+        this.state  ={ file : []} ;
+       }
+
+
+       getFiles(files){
+        this.setState({ file: files[0].base64 })
+        console.log(this.state.file);
       }
+
+
       mySubmitHandler = (event) => {
         event.preventDefault();
   
-        axios.post('http://650dc9f9.ngrok.io/invoice/save',this.state)
+        axios.post('https://emailtest.free.beeceptor.com',this.state)
       }
   
       myChangeHandler = (event) => {
@@ -51,7 +61,7 @@ class Invupl extends Component{
       }
       renderRedirect = () => {
         if (this.state.redirect) {
-          return <Redirect to='/VendorLogin' />
+          return <Redirect to='/PrimaryLogin' />
         }
       }
   
@@ -73,7 +83,11 @@ class Invupl extends Component{
                                  <Form.Input required label='Date' placeholder='Date' onChange={this.myChangeHandler2} />
                                  <Form.Input required label='Due Date' placeholder='Due Date' onChange={this.myChangeHandler3}/>
                                  <Form.Input required label='Invoice Amount' placeholder='₹' onChange={this.myChangeHandler4}/>
-                                 <Form.Input required label='Upload Invoice' placeholder='Upload Invoice' onChange={this.myChangeHandler5} />
+                                 <p><b>Invoice Upload</b></p>
+                                 <FileBase64 required
+                                    multiple={ false }
+                                    onDone={ this.getFiles.bind(this) } />
+
                                  <Button icon="checkmark" content='Submit' primary />
                              </div>
                          </Form>
