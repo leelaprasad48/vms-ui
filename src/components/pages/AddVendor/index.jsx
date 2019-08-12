@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Button, Divider, Form, Grid} from 'semantic-ui-react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import FileBase64 from 'react-file-base64';
 
 
 let str = "1234567892";
@@ -46,15 +47,21 @@ class AddVendor extends Component{
     this.state = { bankbranch: ''};
     this.state = { ifsc: ''};
     this.state = {file:''};
+
    }
+   getFiles(files){
+    this.setState({ file: files[0].base64 })
+    console.log(this.state.file) 
+    
+  }
+
   
-  // https://75aea139.ngrok.io/vendor/save
 
   mySubmitHandler = (event) => {
     event.preventDefault();
     
 
-    axios.post('https://vendor.free.beeceptor.com',this.state).then(()=> {
+    axios.post('https://4aaa8b4a.ngrok.io/vendor/save',this.state).then(()=> {
       console.log('post successful')
     })
     
@@ -206,7 +213,10 @@ class AddVendor extends Component{
                                                              
                                     <Divider horizontal>Documents Upload</Divider>
                                  
-                                    <input type= "file" name= "file" onChange={this.myChangeHandler16}/>
+                                    {/* <input type= "file" name= "file" onChange={this.myChangeHandler16}/> */}
+                                   
+                                   
+                                   <FileBase64 multiple={ true } onDone={ this.getFiles.bind(this) }/>
                                          
 
     
