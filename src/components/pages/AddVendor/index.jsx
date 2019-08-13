@@ -46,22 +46,28 @@ class AddVendor extends Component{
     this.state = { accno: ''};
     this.state = { bankbranch: ''};
     this.state = { ifsc: ''};
-    this.state = {file:''};
+    this.state  ={
+      file:[]
+  }
+  this.state  ={
+    filename:[]
+}
 
    }
-   getFiles(files){
-    this.setState({ file: files[0].base64 })
-    console.log(this.state.file) 
-    
-  }
-
   
+
+   getFiles(files){
+     console.log(files)
+    this.setState({filename:files[0].name})
+    this.setState({ file: files[0].base64 })
+    console.log(this.state.file);
+  }
 
   mySubmitHandler = (event) => {
     event.preventDefault();
     
 
-    axios.post('https://4aaa8b4a.ngrok.io/vendor/save',this.state).then(()=> {
+    axios.post('https://51b63bc5.ngrok.io/vendor/save',this.state).then(()=> {
       console.log('post successful')
     })
     
@@ -140,15 +146,7 @@ class AddVendor extends Component{
       this.setState({ifsc: event.target.value});
 
     }
-    // myChangeHandler16 = (event) => {
-    //   this.setState({status: event.target.value});
-    // }
     
-   myChangeHandler16 = event =>{
-     this.setState({file: event.target.value});
-
-   }
-
 
 
     state = {
@@ -168,6 +166,7 @@ class AddVendor extends Component{
 
 
     render(){
+      
         return(
             <div>
                 <div>
@@ -182,13 +181,15 @@ class AddVendor extends Component{
             </div>
             <Grid.Column>
                          <Form style={{ width: "50%"}} onSubmit={this.mySubmitHandler} >
+                           <Form.Group widths='equal'>
                              <div style={{marginLeft:"54%",marginTop:"5%"}}>
                                 
                                      
                                 
-
-                                <Form.Input required label='Name of the Organization' placeholder='Name of the Organization' onChange={this.myChangeHandler} />
+                              
+                                <Form.Input required label='Name of the Organization' placeholder='Name of the Organization' onChange={this.myChangeHandler} content='initial-scale='/>
                                 <Form.Select fluid label='Entity Type' clearable options={entitytype} selection placeholder='Entity Type' onChange={this.myChangeHandler1}/>
+                                
                                 <Form.Select fluid label='Type of Service' clearable options={typeofservice} selection placeholder='Type of Service' onChange={this.myChangeHandler2}/>
                                 <Form.Input required label='Address' placeholder='Address' onChange={this.myChangeHandler3}/>
                                 <Form.Select fluid label='Partner Type' clearable options={partnertype} selection placeholder='Partner Type' onChange={this.myChangeHandler4} />
@@ -209,21 +210,23 @@ class AddVendor extends Component{
                                  <Form.Input required label='Account Number' placeholder='Account Number'onChange={this.myChangeHandler13} />
                                  <Form.Input required label='Branch' placeholder='PAN No' onChange={this.myChangeHandler14}/>
                                  <Form.Input required label='IFSC Code' placeholder='GSTIN' onChange={this.myChangeHandler15} />
-                                 {/* <Form.Input  disabled onChange={this.myChangeHandler16} /> */}
+                                 
                                                              
                                     <Divider horizontal>Documents Upload</Divider>
                                  
-                                    {/* <input type= "file" name= "file" onChange={this.myChangeHandler16}/> */}
-                                   
-                                   
-                                   <FileBase64 multiple={ true } onDone={ this.getFiles.bind(this) }/>
-                                         
+                                    <FileBase64
+                                    required multiple={ true }
+      
+                                   onDone={ this.getFiles.bind(this) } 
+                                    />
+
 
     
                              <div align= "center">
                              <Button  content='Submit' primary/>
                              </div>
                              </div>
+                             </Form.Group>
                          </Form>
                      </Grid.Column>
                     

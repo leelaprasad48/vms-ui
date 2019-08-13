@@ -1,45 +1,18 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, {Component} from 'react';
-import { Redirect } from 'react-router-dom'
+import { Redirect,Link } from 'react-router-dom'
 import {Button, Divider, Header, Icon, Table ,Grid,Segment, GridColumn,Image} from "semantic-ui-react";
 import 'semantic-ui/dist/semantic.min.css';
 import axios from 'axios'
 import URLs from '../../../config'
+import { Document, Page } from 'react-pdf';
 
 
 class VendorHome extends Component
 {
     constructor(props){
         super(props);
+
+               
         this.state = {
           cpname: ''
       }
@@ -67,26 +40,31 @@ this.state = {
 this.state = {
   vmob: ''
 }
+this.state = {
+  file:''
+}
 
-this.state = {file:''};
+this.state = {filename:''};
 
-        this.state = {
-          date: ''
-      }
 
-      this.state = {
-        duedate: ''
-    }
 
-    this.state = {
-      amount: ''
-  }
+  //       this.state = {
+  //         date: ''
+  //     }
+
+  //     this.state = {
+  //       duedate: ''
+  //   }
+
+  //   this.state = {
+  //     amount: ''
+  // }
 
         }
 
       componentDidMount(){
-          axios.get('https://4aaa8b4a.ngrok.io/vendor/'+this.props.location.state.email).then((adminData)=>{
-          console.log(adminData.data[0].cpname);
+          axios.get('https://51b63bc5.ngrok.io/vendor/'+this.props.location.state.email).then((adminData)=>{
+          //console.log(adminData.data[0].cpname);
           this.setState({cpname: adminData.data[0].cpname})
           this.setState({ventype:adminData.data[0].ventype})
           this.setState({vservice:adminData.data[0].vservice})
@@ -96,14 +74,16 @@ this.state = {file:''};
           this.setState({gst:adminData.data[0].gst})
           this.setState({vmail:adminData.data[0].vmail})
           this.setState({vmob:adminData.data[0].vmob})
-          this.setState({file:adminData.data.file})
+          this.setState({file:adminData.data[0].file})
+          this.setState({filename: adminData.data[0].filename})
+         console.log(this.state.file)
+         let files = this.state.file
           
           })
-          axios.get('https://4aaa8b4a.ngrok.io/invoice/view/1002').then((vendorData)=>{
-          // console.log(adminData.data);
-          this.setState({date : vendorData.data.date})
-          this.setState({duedate: vendorData.data.duedate})
-          this.setState({amount: vendorData.data.amount})
+          axios.get('https://51b63bc5.ngrok.io/invoice/byemail/'+this.props.location.state.email).then((vendorData)=>{
+          console.log(vendorData);
+          this.setState({vendorObject : vendorData.data})
+           
           })   
 
         }
@@ -142,8 +122,9 @@ this.state = {file:''};
 
 
         render()
-            {
-
+            { 
+              
+              let {vendorObject} = this.state;
               return(
                 <div>
                   {this.renderRedirect()}
@@ -201,9 +182,18 @@ this.state = {file:''};
                                 <Table.Cell>Mobile No</Table.Cell>
                                 <Table.Cell>{this.state.vmob}</Table.Cell>
                                 </Table.Row>
+                                <Table.Row>
+                                <Table.Cell>View Documents</Table.Cell>
+                                <Table.Cell>  <a target="_blank" rel="noreferrer noopener" data-qa="message_attachment_title_link" class="c-link c-message_attachment__title_link" href={this.state.file}>{this.state.filename}<span dir="auto"></span></a></Table.Cell>
+                                </Table.Row>
                             </Table.Body>
                             </Table>
-                            <Image src={this.state.file} size='small' />
+                            {/* <Document pdf file src={this.state.filename} size='small' /> */}
+                            {/* <Link href={this.state.file} target="blank">view</Link> */}
+                            {/* <Link target="_blank" to={this.state.file}  query={{file: this.props.file}} >{this.state.filename}</Link> */}
+                            
+                            {/* <a target="_blank" rel="noreferrer noopener" data-qa="message_attachment_title_link" class="c-link c-message_attachment__title_link" href={this.state.file}>{this.state.filename}<span dir="auto"></span></a> */}
+
                         </div>
       {this.renderRedirect2()}
       <div align="center" >
@@ -232,9 +222,14 @@ this.state = {file:''};
                         <Table.Cell width={2}>Date</Table.Cell>
                         <Table.Cell width={2}>Due Date</Table.Cell>
                         <Table.Cell width={2}>Amount</Table.Cell>
-                        <Table.Cell width={2}>Payment Status</Table.Cell>
+                        {/* <Table.Cell width={2}>Payment Status</Table.Cell> */}
                 </Table.Header>
             </Table>
+
+            {vendorObject && vendorObject.map(obj =>{
+
+              return(
+    <div>
 
             <Table celled>
                     
@@ -243,20 +238,23 @@ this.state = {file:''};
                   <Table.Body>
                   
                   <Table.Row>
-                    <Table.Cell width={1}>{}</Table.Cell> 
-                    <Table.Cell width={2}>{this.state.date}</Table.Cell>
-                    <Table.Cell width={2}>{this.state.duedate}</Table.Cell>
-                    <Table.Cell width={2}>{this.state.amount}</Table.Cell>
-                    <Table.Cell width={2}>{}</Table.Cell>
+                    <Table.Cell width={1}></Table.Cell> 
+                    <Table.Cell width={2}>{obj.date}</Table.Cell>
+                    <Table.Cell width={2}>{obj.duedate}</Table.Cell>
+                    <Table.Cell width={2}>{obj.amount}</Table.Cell>
+                    <Table.Cell width={2}></Table.Cell>
                   
                   </Table.Row>
     
                   </Table.Body>
                   
                 </Table>
-    
+    </div>
                     
-
+    )
+  }    
+)
+}
 
 
             </GridColumn>
