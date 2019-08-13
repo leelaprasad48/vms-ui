@@ -13,22 +13,22 @@ class Invupl extends Component{
         this.state = { date : '' };
         this.state = { duedate : '' };
         this.state = { amount : '' };
-        this.state = { invoicedoc : '' };
+        // /is.state = { invoicedoc : '' };
         this.state = { email : 'someone@something.com'};
-        this.state  ={ file : []} ;
+        this.state  ={ invoicedoc : []} ;
        }
 
 
        getFiles(files){
-        this.setState({ file: files[0].base64 })
-        console.log(this.state.file);
+        this.setState({ invoicedoc: files[0].base64 })
+        console.log(this.state.invoicedoc);
       }
 
 
       mySubmitHandler = (event) => {
         event.preventDefault();
   
-        axios.post('https://emailtest.free.beeceptor.com',this.state)
+        axios.post('https://9fbf8394.ngrok.io/invoice/savee',this.state)
       }
   
       myChangeHandler = (event) => {
@@ -47,9 +47,9 @@ class Invupl extends Component{
         this.setState({amount: event.target.value});
     }
 
-    myChangeHandler5 = (event) => {
-        this.setState({invoicedoc: event.target.value});
-    }
+    // myChangeHandler5 = (event) => {
+    //     this.setState({invoicedoc: event.target.value});
+    // }
 
     state = {
         redirect: false
@@ -85,7 +85,7 @@ class Invupl extends Component{
                                  <Form.Input required label='Invoice Amount' placeholder='₹' onChange={this.myChangeHandler4}/>
                                  <p><b>Invoice Upload</b></p>
                                  <FileBase64 required
-                                    multiple={ false }
+                                    multiple={ true }
                                     onDone={ this.getFiles.bind(this) } />
 
                                  <Button icon="checkmark" content='Submit' primary />

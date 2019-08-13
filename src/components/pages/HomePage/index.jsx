@@ -36,7 +36,7 @@ class HomePage extends Component{
 
 mySubmitHandler = (event) => {
   event.preventDefault();
-  axios.post('https://6ea3609e.ngrok.io/vendor/vmail',this.state).then(response=>
+  axios.post('https://51b63bc5.ngrok.io/vendor/vmail',this.state).then(response=>
   {   
       //alert(response.data)
       this.setState({status : response.data })
@@ -44,7 +44,7 @@ mySubmitHandler = (event) => {
          if(this.state.status==true)
               {
                 this.props.history.push({
-                    pathname: '/VendorHome',
+                    pathname: '/AdminHome',
                     state : {email : this.state.vmail}
                 })
                
@@ -71,7 +71,7 @@ mySubmitHandler = (event) => {
     var email=response.profileObj.email;
     var adminDetails = {};
     adminDetails['email'] =  email;
-    axios.post('https://db5b431d.ngrok.io/admin/email',adminDetails).then(response=>
+    axios.post('https://9fbf8394.ngrok.io/admin/email',adminDetails).then(response=>
     {   
         alert(JSON.stringify(response.data));
         
@@ -80,12 +80,12 @@ mySubmitHandler = (event) => {
 
         //Checking admin status and redirecting appropriately.
         if(this.state.status==2){
-          //alert("SuperAdmin")
+          alert("SuperAdmin")
         }
         else if(this.state.status==1)
                     {
                       this.props.history.push({
-                          pathname: '/VendorHome',
+                          pathname: '/adminHome',
                           state : {email : this.state.vmail}
                       }) 
                     }
@@ -99,7 +99,7 @@ mySubmitHandler = (event) => {
 
     .catch(error => {
       console.log('ERROR', error)
-      axios.post('https://db5b431d.ngrok.io/admin/saveadmin',adminDetails)
+      axios.post('https://9fbf8394.ngrok.io/admin/saveadmin',adminDetails)
       alert("Your Request for Admin Access has been submitted to the SuperAdmin.!")
     })
     

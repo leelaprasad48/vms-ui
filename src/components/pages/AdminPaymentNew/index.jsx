@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import { Header,Checkbox, Button,Table, TableBody,Confirm} from "semantic-ui-react";
+import { Header,Checkbox, Button,Table, TableBody,Confirm, Icon, Modal} from "semantic-ui-react";
 import 'semantic-ui/dist/semantic.min.css';
 import axios from 'axios'
+import { Redirect,Link} from 'react-router-dom'
 import URLs from '../../../config'
 
 class AdminPayment extends Component{
@@ -20,42 +21,57 @@ class AdminPayment extends Component{
         
       }
         componentDidMount(){
-            axios.get('https://2e75e23a.ngrok.io/invoice/view').then((adminData)=>{
+            axios.get('https://9fbf8394.ngrok.io/invoice/view').then((adminData)=>{
            
             this.setState({adminObject: adminData.data})
             })
             }
 
-        mySliderHandler = (event,invoiceid)=>
-        {
+        // mySliderHandler = (event,invoiceid)=>
+        // {
          
+        //   event.preventDefault();
+        //   console.log(invoiceid)
+        //   //this.myConfirmHadler.show();
+        //   //this.myConfirmHadler();
+          
+          
+        // }
+        // myConfirmHadler = ()=>
+        // {
+        //   return(
+        //     <Confirm open={this.state.open} onCancel={this.handleCancel} onConfirm={this.handleConfirm} />
+        //   )
+        // }
+
+        // show = () => this.setState({ open: true })
+        // handleConfirm = () => 
+        // {
+        // this.setState({ result: '1', open: false })
+        // console.log(this.state.result);
+        // }
+        // handleCancel = () => this.setState({ result: '0', open: false })
+        handleUpdateStatus =(event,rowid)=>{
           event.preventDefault();
-          console.log(invoiceid)
-          //this.myConfirmHadler.show();
-          //this.myConfirmHadler();
+         
+          axios.put('https://9fbf8394.ngrok.io/updatepayment/'+rowid);
+                 
+          this.setState({
+            redirect: true
+          })
+        }
+
+        renderRedirect = () => {
+          if (this.state.redirect) {
+            return <Redirect to='/AdminPaymentNew' />
+            
+          }
           
-          
         }
-        myConfirmHadler = ()=>
-        {
-          return(
-            <Confirm open={this.state.open} onCancel={this.handleCancel} onConfirm={this.handleConfirm} />
-          )
-        }
-
-        show = () => this.setState({ open: true })
-        handleConfirm = () => 
-        {
-        this.setState({ result: '1', open: false })
-        console.log(this.state.result);
-        }
-        handleCancel = () => this.setState({ result: '0', open: false })
-        
-        
-
-
     render(){
 
+
+      
         const { open, result } = this.state
 
          let {adminObject} = this.state;
@@ -88,7 +104,18 @@ class AdminPayment extends Component{
                               <Table.Cell>{obj.duedate}</Table.Cell>
                               <Table.Cell>{obj.amount}</Table.Cell>
                               <Table.Cell>
-                                <Checkbox slider onChange={(e)=>this.mySliderHandler(e,obj.id)}/>
+                          <Modal trigger ={<Checkbox slider />}basic size='small'>
+                          <Header content='Are you sure you want to Update the Payment Status?' />
+                          <Modal.Actions align='center'>
+                                          <Button color='red' inverted>
+                                          <Icon name='remove' /> No
+                                          </Button>
+                                          {this.renderRedirect()}
+                                          <Button color='green' inverted onClick={(e)=>this.handleUpdateStatus(e,obj.id)}>
+                                          <Icon name='checkmark' /> Yes
+                                      </Button>
+                              </Modal.Actions>
+                          </Modal>
                               </Table.Cell>
                             </Table.Row>
                         </TableBody>
@@ -97,15 +124,9 @@ class AdminPayment extends Component{
         }
         )}
             
-            <Table.Footer>
-              <Table.Row>
-                <Table.HeaderCell>n Unpaid Invoices</Table.HeaderCell>
-              </Table.Row>
-            </Table.Footer>
+           
           </div>
-           <div>
-           <Button positive>Update to Paid</Button>
-         </div>
+           
          </div>
        
         
