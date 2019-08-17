@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Input, Button, Dropdown, Form } from "semantic-ui-react";
 import 'semantic-ui/dist/semantic.min.css';
+import './custom.css';
 
 class AdminPayment extends Component{
     render(){
@@ -9,26 +10,26 @@ class AdminPayment extends Component{
             <div align="right">
                     <Button style={{backgroundColor:"red"}}icon="sign out alternative" content="Sign Out"></Button> 
                 </div>
-            <Form>
+            <Form id="body">
             <Dropdown
                 placeholder="Select Vendor"
                 label='Select Vendor'
                 clearable options selection />
-            <Form.Field required>
+            <Form.Field required id="test">
               <label>Invoice Number</label>
-              <input placeholder="abcxxx" />
+              <input  placeholder="abcxxx" />
             </Form.Field>
-            <Form.Field required>
+            <Form.Field id="test" required>
               <label>Invoice Date</label>
-              <input placeholder="dd/mm/yy" />
+              <input id="test" placeholder="dd/mm/yy" />
             </Form.Field>
             <Form.Field required>
               <label>Due Date</label>
-              <Input placeholder="dd/mm/yy" />
+              <Input id="test" placeholder="dd/mm/yy" />
             </Form.Field>
             <Form.Field required>
               <label>GSTIN</label>
-              <Input placeholder="xxABCDExxFxAx" />
+              <Input id="test" placeholder="xxABCDExxFxAx" />
             </Form.Field>
             <Form.Field required>
               <label>Invoice Amount</label>

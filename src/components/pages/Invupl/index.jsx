@@ -1,38 +1,55 @@
 import 'semantic-ui-css/semantic.min.css';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom'
-import { Button, Divider, Form, Grid} from 'semantic-ui-react';
+import { Button, Divider, Form, Grid, Segment,Icon} from 'semantic-ui-react';
 import axios from 'axios'
 import FileBase64 from 'react-file-base64';
-import DatePicker from 'react-date-picker';
+import URLs from '../../../config'
 
-class Invupl extends Component{
+
+class InvoiceUpload extends Component{
     constructor(props) {
         super(props);
         this.state = { id : '' };
         this.state = { date : '' };
         this.state = { duedate : '' };
         this.state = { amount : '' };
-        // /is.state = { invoicedoc : '' };
-        this.state = { email : 'someone@something.com'};
-        this.state  ={ invoicedoc : []} ;
+        this.state = { email :''};
+        this.state  ={ invoicedoc : ''} ;
+        
        }
 
 
        getFiles(files){
         this.setState({ invoicedoc: files[0].base64 })
         console.log(this.state.invoicedoc);
+        console.log("from file base"+files[0].base64)
       }
-
 
       mySubmitHandler = (event) => {
         event.preventDefault();
-  
-        axios.post('https://9fbf8394.ngrok.io/invoice/savee',this.state)
+        
+        axios.post(URLs.baseURL+'/invoice/savee',this.state,{ headers: {Authorization : ''+localStorage.getItem("jwtToken")}})
+        .then(response => {
+          console.log(response.status)
+          if(response.status==200)
+          {
+            alert()
+            this.props.history.push({
+              pathname: '/app/VendorHome',
+          })
+          }
+          else{
+              localStorage.removeItem('jwtToken');
+              this.props.history.push('/');
+          }
+        })        
       }
+      
   
       myChangeHandler = (event) => {
         this.setState({id: event.target.value});
+        this.setState({email:''+localStorage.getItem("vmail")});
       }
   
       myChangeHandler2 = (event) => {
@@ -46,52 +63,41 @@ class Invupl extends Component{
     myChangeHandler4 = (event) => {
         this.setState({amount: event.target.value});
     }
-
-    // myChangeHandler5 = (event) => {
-    //     this.setState({invoicedoc: event.target.value});
-    // }
-
-    state = {
-        redirect: false
-      }
-      setRedirect = () => {
-        this.setState({
-          redirect: true
-        })
-      }
-      renderRedirect = () => {
-        if (this.state.redirect) {
-          return <Redirect to='/PrimaryLogin' />
-        }
-      }
   
     render(){
         return(
-            <div>
+            <div >
                 <div>
-                    <div align="right">
-                    {this.renderRedirect()}
-                        <Button style={{backgroundColor:"red"}}icon="sign out alternative" content="Sign Out" onClick={this.setRedirect}></Button> 
-                    </div>
+                 
                     <Divider horizontal>Invoice Upload</Divider>
                 <div>
             </div>
-            <Grid.Column>
+            <div >
+            <Segment>
                          <Form style={{ width: "50%"}} onSubmit={this.mySubmitHandler} >
-                             <div style={{marginLeft:"54%",marginTop:"5%"}}>
+                             <div style={{marginLeft:"67%",marginTop:"5%",width:"60%"}}>
                                  <Form.Input required label='Invoice Number' placeholder='Invoice Number' onChange={this.myChangeHandler} />
-                                 <Form.Input required label='Date' placeholder='Date' onChange={this.myChangeHandler2} />
-                                 <Form.Input required label='Due Date' placeholder='Due Date' onChange={this.myChangeHandler3}/>
-                                 <Form.Input required label='Invoice Amount' placeholder='₹' onChange={this.myChangeHandler4}/>
+                                 <Form.Input required type='date' label='Date' placeholder='Date' onChange={this.myChangeHandler2} />
+                                 <Form.Input required type='date' label='Due Date' placeholder='Due Date' onChange={this.myChangeHandler3}/>
+                                 <Form.Input required type='number' label='Invoice Amount' placeholder='₹' onChange={this.myChangeHandler4}/>
                                  <p><b>Invoice Upload</b></p>
                                  <FileBase64 required
                                     multiple={ true }
                                     onDone={ this.getFiles.bind(this) } />
-
-                                 <Button icon="checkmark" content='Submit' primary />
+                                  <div style={{marginTop:"3%",marginLeft:"37%"}}>
+                                 
+                                  <Button animated >
+                                    <Button.Content visible>Submit</Button.Content>
+                                    <Button.Content hidden>
+                                    <Icon name='angle double right' />
+            
+                                    </Button.Content>
+                                 </Button>
+                                 </div>
                              </div>
                          </Form>
-                     </Grid.Column>
+              </Segment>
+              </div>
             </div>    
                        
           </div>
@@ -100,4 +106,4 @@ class Invupl extends Component{
 }
 
 
-export default Invupl
+export default InvoiceUpload
