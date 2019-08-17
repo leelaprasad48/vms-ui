@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom'
 
-export default class logout extends Component {
+export default class logoutAdmin extends Component {
     constructor(props){
         super(props)
-        localStorage.removeItem("jwtToken")
-        localStorage.removeItem("vmail")
+        localStorage.removeItem("jwtTokenAdmin")
+        localStorage.removeItem("amail")
     }
     
     render() {
