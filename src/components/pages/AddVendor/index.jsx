@@ -78,8 +78,21 @@ class AddVendor extends Component{
 
     mySubmitHandler = (event) => {
        event.preventDefault();
-       axios.post(URLs.baseURL+'/vendor/save',this.state,{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}}).then(()=> {
-       alert('post successful')
+       axios.post(URLs.baseURL+'/vendor/save',this.state,{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}}).then((response)=> {
+       if(response.status==200){
+        alert('post successful')
+        this.props.history.push({
+          pathname:'/admin/AdminHome'
+        })
+       }
+       else{
+         localStorage.removeItem("jwtTokenAdmin");
+         this.props.history.push({
+          pathname:'/'
+        })
+       }
+       
+       
             
     })
     .catch(()=> {
@@ -155,12 +168,15 @@ class AddVendor extends Component{
         return(
             <div>
                <div>
-                   
+               
+                    <Divider horizontal><h1>Add Vendor</h1></Divider>
+                    
+
                <Grid.Column >
                  <Form   onSubmit={this.mySubmitHandler} >
                       <Form.Group >
                          <div>          
-                             <Segment style={{width: "140%",marginLeft:"8%", marginTop:"5%",marginRight:"5%"}} >
+                             <Segment style={{width: "140%",marginLeft:"8%", marginTop:"3%",marginRight:"5%"}} >
                                   <Grid columns={3} relaxed='very' >
                                       <Grid.Column>
                                           <Divider horizontal>Basic Details</Divider>
@@ -169,7 +185,7 @@ class AddVendor extends Component{
                                               <Form.Select style={{width:"100%"}} fluid label='Type of Service' clearable options={typeofservice} selection placeholder='Type of Service' onChange={this.myChangeHandler2}/>
                                               <Form.Input style={{width:"100%"}} required type='text' label='Address' placeholder='Address' onChange={this.myChangeHandler3}/>
                                               <Form.Select style={{width:"100%"}} fluid label='Partner Type' clearable options={partnertype} selection placeholder='Partner Type' onChange={this.myChangeHandler4} />
-                                              <Form.Input style={{width:"100%"}} required type='text' pattern="[A-Z]{5}[0-9]{4}[A-Z]{2}" label='PAN No' placeholder='PAN No' onChange={this.myChangeHandler5} />
+                                              <Form.Input style={{width:"100%"}} required type='text' pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" label='PAN No' placeholder='PAN No' onChange={this.myChangeHandler5} />
                                       </Grid.Column> 
                                       <Grid.Column>          
                                                <br></br>
