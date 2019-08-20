@@ -6,7 +6,7 @@ import axios from 'axios'
 import FileBase64 from 'react-file-base64';
 import URLs from '../../../config'
 
-
+//Class and State Declarations
 class InvoiceUpload extends Component{
     constructor(props) {
         super(props);
@@ -19,19 +19,22 @@ class InvoiceUpload extends Component{
         
        }
 
-
+//FileBase64 Logic
        getFiles(files){
         this.setState({ invoicedoc: files[0].base64 })
         console.log(this.state.invoicedoc);
         console.log("from file base"+files[0].base64)
       }
 
+
+      //Posting Invoice to Back-End along with JWT Auth.
       mySubmitHandler = (event) => {
         event.preventDefault();
         
         axios.post(URLs.baseURL+'/invoice/savee',this.state,{ headers: {Authorization : ''+localStorage.getItem("jwtToken")}})
         .then(response => {
           console.log(response.status)
+          //Success Case - redirecting to home after successful upload.
           if(response.status==200)
           {
             alert()
@@ -39,6 +42,7 @@ class InvoiceUpload extends Component{
               pathname: '/app/VendorHome',
           })
           }
+          //Failure Case
           else{
               localStorage.removeItem('jwtToken');
               this.props.history.push('/');
@@ -46,7 +50,7 @@ class InvoiceUpload extends Component{
         })        
       }
       
-  
+    //Setting state for each object in upload form.
       myChangeHandler = (event) => {
         this.setState({id: event.target.value});
         this.setState({email:''+localStorage.getItem("vmail")});
@@ -64,6 +68,8 @@ class InvoiceUpload extends Component{
         this.setState({amount: event.target.value});
     }
   
+
+    //UI Part
     render(){
         return(
             <div >
@@ -107,3 +113,7 @@ class InvoiceUpload extends Component{
 
 
 export default InvoiceUpload
+
+
+
+

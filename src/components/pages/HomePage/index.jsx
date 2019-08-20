@@ -9,6 +9,7 @@ import GoogleLogin from 'react-google-login'
 
 
 
+//Class and State Declarations
 class Login extends Component{
 
     constructor(props) {
@@ -25,7 +26,7 @@ class Login extends Component{
       state = {
         redirect2: false
       }
-
+      
       renderRedirect = () => {
         if (this.state.redirect) {
           return <Redirect to='/app/VendorHome' />
@@ -40,7 +41,9 @@ class Login extends Component{
 
       mySubmitHandler = (event) => {
         event.preventDefault();
-        
+
+
+      //Sending Vendor Email & Password to backend for verification, setting Vmail & JWT in local storage.  
         axios.post(URLs.baseURL+'/vendor/vmail',this.state).then(response=>
         {   
             const token=response.data;
@@ -55,24 +58,29 @@ class Login extends Component{
         
       }
 
+      //Fetching response from Google after successful login.
       responseGoogle= (response) => {
         
         console.log(response.profileObj)
         var email=response.profileObj.email;
         var adminDetails = {};
+
+        //Extracting email from Google's response and assigning it to local variiable "email".
         adminDetails['email'] =  email;
         axios.post(URLs.baseURL+'/admin/email',adminDetails).then(response=>
         {   
             // alert(JSON.stringify(response.data));
-            
+            //Extracting Status from back-End response.
             this.setState({status : response.data[0].status })
             
+            //Redirecction to Super Admin page.
             if(this.state.status==2){
               alert("SuperAdmin")
             }
+            //Redirection to Admin Home.
             else if(this.state.status==1)
                         {
-
+                          //Sending email to backend to get JWT.                        
                           axios.post(URLs.baseURL+'/admin/token',adminDetails).then(response=>
                             {   
                                 const token=response.data;
@@ -85,14 +93,14 @@ class Login extends Component{
                             })
                             
                             
-                            
+                         //If the Admin's request is pending for Approval by super admin.   
                         }
               else if(this.state.status==0)
                         {
                          alert("You are yet to be authorized as Admin by Super Admin.")
                         } 
             
-      
+      //If the Admin's Details do not exist in DB - Post the email as request with default status as 0(Pending Approval)
         })
     
         .catch(error => {
@@ -119,7 +127,7 @@ class Login extends Component{
       
         
         return(
-          
+      //  Vendor Login Form.   
 <div style={{height:"100vh" ,padding:"10%",backgroundImage: "url('https://images.pexels.com/photos/1906440/pexels-photo-1906440.jpeg?cs=srgb&dl=background-conceptual-data-1906440.jpg&fm=jpg')",backgroundPosition:"center",backgroundSize:"cover" }}>
   
     <Grid textAlign='center' verticalAlign='middle' >
@@ -151,7 +159,7 @@ class Login extends Component{
         Admin Login
         </Header>
         
-          
+          {/* OAuth2 via Google(API) */}
           <GoogleLogin
             clientId="512964282293-l8jstgcnlvj6g761gahmnbmro1nhlj8v.apps.googleusercontent.com"
             clientSecret="_6RU-J34o06HkJDA4CF6MHqQ"

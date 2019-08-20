@@ -6,6 +6,7 @@ import { Redirect,Link} from 'react-router-dom'
 import URLs from '../../../config'
 
 
+//Class and State Declarations
 class AdminPayment extends Component{
     constructor(props){
         super(props);
@@ -20,6 +21,7 @@ class AdminPayment extends Component{
         this.state = {result: '0' }
                 
       }
+      //getting unpaid  invoices from back-end.
         componentDidMount(){
             axios.get(URLs.baseURL+'/invoice/pending',{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}}).then((adminData)=>{
            
@@ -52,17 +54,21 @@ class AdminPayment extends Component{
         // console.log(this.state.result);
         // }
         // handleCancel = () => this.setState({ result: '0', open: false })
+       
+       //Mapping rowID to invoice ID to send to back-end.
         handleUpdateStatus =(event,rowid)=>{
           event.preventDefault();
           console.log(rowid)
-         
+         //PUT Request to Modify payment status
           axios.put(URLs.baseURL+'/invoice/updatepayment/'+rowid,{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}})
           .then(response => {
             console.log(response.status)
+            //Success Case - And reloading te page with new data upon successful put. 
             if(response.status==200)
             {
               window.location.reload();     
             }
+            //failure Case
             else{
               alert("Upload Failed");
             }
@@ -81,7 +87,7 @@ class AdminPayment extends Component{
         }
         
         
-        
+        //UI Part
     render(){
       
         const { open, result } = this.state
@@ -89,7 +95,7 @@ class AdminPayment extends Component{
          let {adminObject} = this.state;
 
         return(
-            
+            // Table Headings
             <div>
               <div><Header as='h1' color="red" block>Pending Invoices</Header></div>
               <div>
@@ -105,7 +111,7 @@ class AdminPayment extends Component{
             </Table.Header>
             </Table>
             
-
+         {/*  Actual Data */}
             {adminObject && adminObject.map(obj =>{
               {console.log(obj)}
                 return(
@@ -120,6 +126,9 @@ class AdminPayment extends Component{
                               <Table.Cell textAlign="center" width={2}>{obj.duedate}</Table.Cell>
                               <Table.Cell textAlign="left" width={2}>{obj.amount}</Table.Cell>
                               <Table.Cell textAlign="center" width={1}>
+
+                                {/* Slider for toggling payment status */}
+
                           <Modal trigger ={<Checkbox slider width={1}/>}basic size='small'>
                           <Header content='Are you sure you want to Update the Payment Status?' />
                           <Modal.Actions align='center'>
