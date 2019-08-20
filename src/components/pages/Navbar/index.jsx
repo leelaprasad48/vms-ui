@@ -44,7 +44,7 @@ this.props.history.push({
         
       <Segment inverted style={{opacity:"0.7"}}>
         <Menu inverted secondary>
-          <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClickHome} />
+          <Menu.Item  name='home' active={activeItem === 'home'} onClick={this.handleItemClickHome} />
           <Menu.Item
             
             name='InvoiceUpload'
@@ -52,6 +52,7 @@ this.props.history.push({
             onClick={this.handleItemClick2}
           />
           <Menu.Item 
+          
             position='right'
             name='SignOut'
             active={activeItem === 'SignOut'}
