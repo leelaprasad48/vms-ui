@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Header,Checkbox, Button,Table, TableBody, Form , Icon, Modal, Segment, Grid, GridColumn} from "semantic-ui-react";
+import { Header,Checkbox, Button,Table, TableBody, Form , Icon, Modal, Segment, Grid, GridColumn, Divider} from "semantic-ui-react";
 import 'semantic-ui/dist/semantic.min.css';
 import axios from 'axios'
 import { Redirect,Link} from 'react-router-dom'
@@ -131,12 +131,14 @@ class SuperAdmin extends Component {
         return(
             // Table Headings
             <div>
-                     <div><Header as='h1' color="teal" textAlign="center" block>Welcome!Super Admin</Header></div>
-                        <Segment>
+                     <div><Header as='h1' color="teal" textAlign="center" block>Welcome-Super Admin
+                     <Header.Subheader>Manage your Admins.</Header.Subheader>
+                     </Header></div>
+                        <Segment>                        
                             <Grid columns={2} relaxed="very">
                                 <Grid.Column>
                         <div align="left" >
-                              
+                            <Divider horizontal>Pending Admin Requests</Divider>
                             <Table celled fixed singleLine id="body" style={{marginLeft:"1%",marginTop:"5%",width:'100%'}}>
                               <Table.Header>
                                  <Table.Row>
@@ -195,6 +197,7 @@ class SuperAdmin extends Component {
         <Grid.Column>
           
          <div>
+         <Divider horizontal>Existing Admins</Divider>
              <Table celled fixed singleLine id="body" style={{marginLeft:"1%",marginTop:"5%",width:'100%'}}>
                 <Table.Header>
                     <Table.Row>
@@ -261,8 +264,7 @@ class SuperAdmin extends Component {
       </Header>
 <Form style={{marginLeft:'37%',width:'25%'}} size='small'>
         <Segment stacked>
-          <Form.Input fluid icon='user secret' iconPosition='left' placeholder='Admin E-mail address' onChange={this.myChangeHandler}/>
-         
+          <Form.Input type="email" fluid icon='user secret' iconPosition='left' placeholder='Admin E-mail address' onChange={this.myChangeHandler}/>         
          <Button animated color='teal' fluid size='large' onClick={this.AddAdmin}>
          <Button.Content visible> Add</Button.Content>
          <Button.Content hidden>
