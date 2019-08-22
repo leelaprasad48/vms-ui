@@ -51,8 +51,8 @@ this.props.history.push({
         
       <Segment inverted style={{opacity:"0.7"}}>
         <Menu inverted secondary>
-          <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClickHome} />
-          <Menu.Item
+          <Menu.Item icon="home" name='home' active={activeItem === 'home'} onClick={this.handleItemClickHome} />
+          <Menu.Item icon="add user"
             
             name='Add Vendor'
             active={activeItem === 'Add Vendor'}
@@ -61,11 +61,13 @@ this.props.history.push({
           <Menu.Item
             
             name='Invoice Payment'
+            icon="rupee sign"
             active={activeItem === 'Invoice Payment'}
             onClick={this.handleItemClick3}
           />
           <Menu.Item 
             position='right'
+            icon="sign out alternative"
             name='SignOut'
             active={activeItem === 'SignOut'}
             onClick={this.handleItemClick4}

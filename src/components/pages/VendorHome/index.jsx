@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom'
-import {Divider, Header, Icon, Table ,Grid,Segment,GridColumn} from "semantic-ui-react";
+import {Divider, Header, Icon, Table ,Grid,Segment,GridColumn,Button,Embed,Modal,Image} from "semantic-ui-react";
 import 'semantic-ui/dist/semantic.min.css';
 import axios from 'axios'
 import URLs from '../../../config'
+import Spinner from 'react-spinner-material';
 
 
 
@@ -26,6 +27,7 @@ class VendorHome extends Component
 
         componentDidMount(){
             console.log(localStorage.getItem("vmail"))
+            
             
             
             axios.get(URLs.baseURL+'/vendor/'+localStorage.getItem("vmail"),{ headers: {Authorization :''+localStorage.getItem("jwtToken")}}).then((VendorData)=>{
@@ -71,6 +73,18 @@ class VendorHome extends Component
                   }
                 }
 
+              handleFileClick=(e,filename)=>{
+                return(
+                  <div>
+                  <Embed
+                  icon='right circle arrow'
+                  placeholder='/images/image-16by9.png'
+                  url={filename}
+                /></div>
+              
+                );
+              }
+
 
         render()
             {
@@ -80,7 +94,9 @@ class VendorHome extends Component
               if(this.state.VendorObject=== undefined)
               {
                 return(
-                    <div><h1>Loading...</h1></div>
+                     <div align="center" style={{marginTop:"15%"}}>
+                 <Spinner size={100} spinnerColor={"#333"} spinnerWidth={10} visible={true} />
+              </div>
                 )
 
               }
@@ -106,7 +122,7 @@ class VendorHome extends Component
 
                 <div>
 
-                    
+                 
                     
 
                     <div>
@@ -152,12 +168,29 @@ class VendorHome extends Component
                                 </Table.Row>
                                  <Table.Row>
                                 <Table.Cell>View Documents</Table.Cell>
-                                <Table.Cell>  <a target="_blank" rel="noreferrer noopener" data-qa="message_attachment_title_link" class="c-link c-message_attachment__title_link" href={obj.file}>{obj.filename}<span dir="auto"></span></a></Table.Cell>
+                                <Table.Cell><Modal trigger={<Button icon="download" content={obj.filename} onClick={(e)=>this.handleFileClick(e,obj.file)}></Button>  }>
+    <Modal.Header>Select a Photo</Modal.Header>
+    <Modal.Content>
+      
+      
+      <Embed active={true}
+                  icon='right circle arrow'
+                  placeholder='/images/image-16by9.png'
+                  url={obj.file}
+                />
+      
+    </Modal.Content>
+  </Modal></Table.Cell>
                                 </Table.Row>
                             </Table.Body>
                             </Table>
+                            {/* <a target="_blank" rel="noreferrer noopener" data-qa="message_attachment_title_link" class="c-link c-message_attachment__title_link" href={obj.file}>{obj.filename}<span dir="auto"></span></a> */}
                         
                         </div>
+
+                        
+
+                  
       {this.renderRedirect2()}
 
                 </div>
