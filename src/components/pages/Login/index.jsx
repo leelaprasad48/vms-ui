@@ -1,8 +1,12 @@
 import React, {Component} from 'react'
-import { Button, Divider, Form, Grid, Segment, Header, Icon } from 'semantic-ui-react'
+import { Button, Form, Grid, Segment, Header, Icon,} from 'semantic-ui-react'
 import 'semantic-ui/dist/semantic.min.css';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom'
+import URLs from '../../../config';
+import GoogleLogin from 'react-google-login'
+
+
 
 class Login extends Component{
 
@@ -12,44 +16,108 @@ class Login extends Component{
         this.state = { vpass : '' };
         this.state = { aemail : '' };
         this.state = { status : '0' };  
+        this.state = { showErr: false };
       }
       
       state = {
         redirect: false
       }
+      state = {
+        redirect2: false
+      }
 
       renderRedirect = () => {
         if (this.state.redirect) {
-          return <Redirect to='/VendorHome' />
+          return <Redirect to='/app/VendorHome' />
+        }
+      }
+
+      renderRedirect2 = () => {
+        if (this.state.redirect) {
+          return <Redirect to='/admin/adminHome' />
         }
       }
 
       mySubmitHandler = (event) => {
         event.preventDefault();
-  
-        axios.post('http://2e75e23a.ngrok.io/vendor/vmail',this.state).then(response=>
-        {   
-            //alert(response.data)
-            this.setState({status : response.data })
+        
+        axios.post(URLs.baseURL+'/vendor/vmail',this.state).then(response=>
+        {   console.log(response);
+            const token=response.data;
+            if(token===false)
+            {
+              this.setState({showErr: true});
+            }
+            else{
+            localStorage.setItem("jwtToken",token)
 
-            if(this.state.status==true){
-              
-              localStorage.setItem("vmail",this.state.vmail)
+            localStorage.setItem("vmail",this.state.vmail)
+
               this.setState({
                 redirect: true
               })
-            }
-            else{
-
-            alert("wrong cred")
-            }        
+            }     
         })
         
       }
 
-     
+      responseGoogle= (response) => {
+        
+        console.log(response)
+        var email=response.profileObj.email;
+        var aname=response.profileObj.givenName;
+        var atitle=response.profileObj.familyName;
+        var adminDetails = {};
+        adminDetails['email'] =  email;
+        axios.post(URLs.baseURL+'/admin/email',adminDetails).then(response=>
+        {   
+            // alert(JSON.stringify(response.data));
+            
+            this.setState({status : response.data[0].status })
+            
+            if(this.state.status==2){
+              this.props.history.push({
+                pathname: '/SuperAdmin'
+            })
+            }
+            else if(this.state.status==1)
+                        {
 
+                          axios.post(URLs.baseURL+'/admin/token',adminDetails).then(response=>
+                            {   
+                                const token=response.data;
+                                localStorage.setItem("jwtTokenAdmin",token)
+                    
+                                localStorage.setItem("amail",email)
+                                localStorage.setItem("aname",aname)
+                                localStorage.setItem("atitle",atitle)
+
+                                this.props.history.push({
+                                  pathname: '/admin/adminHome'
+                                }) 
+                            })
+                            
+                            
+                            
+                        }
+              else if(this.state.status==0)
+                        {
+                         alert("You are yet to be authorized as Admin by Super Admin.")
+                        } 
+            
+      
+        })
     
+        .catch(error => {
+          console.log('ERROR', error)
+          console.log(error.response)
+          axios.post(URLs.baseURL+'/admin/saveadmin',adminDetails)
+          alert("Your Request for Admin Access has been submitted to the SuperAdmin.!")
+        })
+        
+        console.log(adminDetails);
+      } 
+
   
       myChangeHandler = (event) => {
         this.setState({vmail: event.target.value});
@@ -59,57 +127,71 @@ class Login extends Component{
           this.setState({vpass: event.target.value});
       }
       
-      myChangeHandler3 = (event) =>{
-      this.setState({aemail: event.target.value});
-      }
-
-      mySubmitHandler2 = (event) =>{
-          event.preventDefault();
-
-          
-
-            axios.get('https://d09156f8.ngrok.io/admin/email/'+this.state.aemail).then((adminData)=>{
-            console.log(adminData.data);
-            this.setState({status: adminData.data.status})
-            alert(adminData.email)
-            
-            
-      }   )
-      }  
+     
     render(){
+      
         
         return(
+          
+<div style={{height:"100vh" ,padding:"10%",backgroundImage: "url('https://images.pexels.com/photos/1906440/pexels-photo-1906440.jpeg?cs=srgb&dl=background-conceptual-data-1906440.jpg&fm=jpg')",backgroundPosition:"center",backgroundSize:"cover" }}>
+  
+    <Grid textAlign='center' verticalAlign='middle' >
+      <Grid.Row>
+      
 
-  <Segment placeholder>
-    <Grid columns={2} relaxed='very' stackable>
-      <Grid.Column>
-        <Form onSubmit={this.mySubmitHandler}>
+        <Form inverted size='large' style={{width:"30%",height:"100%"}} onSubmit={this.mySubmitHandler}>
         
-        <Header as='h4' color='teal' textAlign="center">
-            <Icon name="sign in alternate"/>
-            Vendor Login
-          </Header>
-          <Form.Input required icon='user' iconPosition='left' label='Username' placeholder='Username' onChange={this.myChangeHandler}/>
-          <Form.Input required icon='lock' iconPosition='left' label='Password' type='password' onChange={this.myChangeHandler2}/>
+          <Segment raised stacked inverted textAlign='center' style={{opacity:"0.55"}}>
+          <Header as='h2' color='white' textAlign='center'>
+        Vendor Login
+        </Header>
+          <Form.Input  required icon='user' iconPosition='left' placeholder='Username' onChange={this.myChangeHandler} stackable/>
+          <Form.Input required icon='lock' iconPosition='left' placeholder='Password' type='password' onChange={this.myChangeHandler2}/>
           {this.renderRedirect()}
-          <Button content='Login' primary />
+          <Button animated >
+            <Button.Content visible>Login</Button.Content>
+            <Button.Content hidden>
+              <Icon name='sign in alternate'/>
+            </Button.Content>
+            </Button>
+            {this.state.showErr?
+          <h3 style={{color:"red"}}>Invalid usrname or password</h3>
+          :null}
+          </Segment>
+          
+         
         </Form>
-      </Grid.Column>
+        </Grid.Row>
 
-      <Grid.Column verticalAlign='middle'>
-          <Form onSubmit={this.mySubmitHandler2}>
-      <Header as='h4' color='teal' textAlign="center">
-            <Icon name="sign in alternate"/>
-            Admin Login/Request
-          </Header>
-      <Form.Input required icon='user secret' iconPosition='left' label='Admin' placeholder='Admin email' onChange={this.myChangeHandler3}/>
-        <Button style={{backgroundColor:"lime"}} content='verify' icon='check square' size='medium' />
-        </Form>
-      </Grid.Column>
+        <Grid.Row>
+        <Segment stacked inverted textAlign='center' style={{width:"30%",opacity:"0.55"}}>
+        <Header as='h2' color='white' textAlign='center'> 
+        Admin Login
+        </Header>
+        
+          
+          <GoogleLogin
+            clientId="512964282293-l8jstgcnlvj6g761gahmnbmro1nhlj8v.apps.googleusercontent.com"
+            clientSecret="_6RU-J34o06HkJDA4CF6MHqQ"
+            hostedDomain="nineleaps.com"
+          
+
+            render={renderProps => (
+              
+            <Button icon='google' color="white" size="large" onClick={renderProps.onClick} disabled={renderProps.disabled}>Sign in with Google</Button>)}
+
+                buttonText="Login"
+                onSuccess={this.responseGoogle}
+                onFailure={this.responseGoogle}
+                cookiePolicy={'single_host_origin'}
+          />
+          
+          </Segment>
+      
+      </Grid.Row>
     </Grid>
-
-    <Divider vertical>Or</Divider>
-  </Segment>
+  
+  </div>
 )
         }}
 export default Login
