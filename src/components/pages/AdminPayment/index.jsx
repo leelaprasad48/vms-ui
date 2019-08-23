@@ -34,7 +34,6 @@ class AdminPayment extends Component{
 
         // mySliderHandler = (event,invoiceid)=>
         // {
-         
         //   event.preventDefault();
         //   console.log(invoiceid)
         //   //this.myConfirmHadler.show();
