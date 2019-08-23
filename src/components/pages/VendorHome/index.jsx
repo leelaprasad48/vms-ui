@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom'
-import {Divider, Header, Icon, Table ,Grid,Segment,GridColumn,Button,Embed,Modal,Image} from "semantic-ui-react";
+import {Divider, Header, Icon, Table ,Grid,Segment,GridColumn,Button,Embed,Modal,Form} from "semantic-ui-react";
 import 'semantic-ui/dist/semantic.min.css';
 import axios from 'axios'
 import URLs from '../../../config'
@@ -14,22 +14,18 @@ class VendorHome extends Component
         super(props);
         this.state={
             InvoiceObject : undefined,
+            VendorObject: undefined,
+            vpass:'',
+            vendornewpassword:'',
+            vendorconfirmpassword:'',
           }
         
-          this.state = {
-              VendorObject: undefined
-          }
-
-
           const vmail=localStorage.getItem("vmail");
           
         }
 
         componentDidMount(){
-            console.log(localStorage.getItem("vmail"))
-            
-            
-            
+            //console.log(localStorage.getItem("vmail"))
             axios.get(URLs.baseURL+'/vendor/'+localStorage.getItem("vmail"),{ headers: {Authorization :''+localStorage.getItem("jwtToken")}}).then((VendorData)=>{
             
             this.setState({VendorObject: VendorData.data})
@@ -41,13 +37,33 @@ class VendorHome extends Component
 
             
             axios.get(URLs.baseURL+'/invoice/byemail/'+localStorage.getItem("vmail"),{ headers: {Authorization : ''+localStorage.getItem("jwtToken")}}).then((InvoiceData)=>{
-                
+                console.log(InvoiceData)
             this.setState({InvoiceObject: InvoiceData.data})
             })
             .catch(err=>{
               localStorage.removeItem('jwtToken')
               localStorage.removeItem('vmail')
               this.props.history.push('/')});
+
+              if(this.state.vendornewpassword == this.state.vendorconfirmpassword){
+              axios.put(URLs.baseURL+'/'+localStorage.getItem("vmail"),this.state,{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}})
+                .then(response => {
+                    console.log(response.status)
+                    //Success Case
+                    if(response.status==200)
+                    {
+                        alert("Successfully Password Changed")
+                       window.location.reload();   
+                    }
+                  
+                    //Failure Case
+                    else{
+                      alert("Failed");
+                    }
+                  })
+                }else{
+                  alert("Confirm Password is not matching with NewPassword");
+                }
 
             }
 
@@ -61,8 +77,7 @@ class VendorHome extends Component
                 })
               }
           
-          
-              renderRedirect = () => {
+               renderRedirect = () => {
                 if (this.state.redirect) {
                   return <Redirect to='/' />
                 }
@@ -85,6 +100,12 @@ class VendorHome extends Component
                 );
               }
 
+              myChangeHandler = (event) => {
+                this.setState({[event.target.name]: event.target.value});
+              }
+    
+              
+
 
         render()
             {
@@ -104,6 +125,31 @@ class VendorHome extends Component
               return(
 
                 <div>
+                    <Modal trigger={<Button circular inverted secondary content="Change Password" ></Button> } size='small'>
+                    <Modal.Actions>
+                    <p style={{textAlign:"center",fontSize:"30px",color:'teal'}}><b>Change Password</b>
+                      <div>
+                      
+                      <Form style={{marginLeft:'28%',width:'45%'}} size='small'>
+                        <Segment stacked>
+                            <Form.Input required type="password" fluid label='Current Password' labelPosition='left corner' name='vpass' icon='lock' iconPosition='left' placeholder='Current Password' onChange={this.myChangeHandler}/>         
+                            <Form.Input required type="password" fluid label='New Password' labelPosition='left corner' name='vendornewpassword' icon='lock' iconPosition='left' placeholder='New Password' onChange={this.myChangeHandler}/>  
+                            <Form.Input required type="password" fluid label='Confirm Password' icon='lock' name='vendorconfirmpassword' iconPosition='left' placeholder='Confirm Password' onChange={this.myChangeHandler}/>  
+                                   
+                            <Button animated color='teal' fluid size='large' onClick={this.componentDidMount}>
+                               <Button.Content visible>Submit</Button.Content>
+                                  <Button.Content hidden>
+                                    <Icon name='plus square' />
+                                  </Button.Content>
+                              </Button>
+                          </Segment>
+                        </Form>
+                      </div>
+                      </p>
+                   </Modal.Actions>
+                </Modal>
+
+
                     {this.renderRedirect()}
            <Segment>
             <Grid columns={2} relaxed='very'>
@@ -120,11 +166,7 @@ class VendorHome extends Component
 
                     return(
 
-                <div>
-
-                 
-                    
-
+                <div>           
                     <div>
                         <div align = "left" style={{ width: "70%", marginTop: "5%", marginLeft:"10%"}}>
     
@@ -169,26 +211,23 @@ class VendorHome extends Component
                                  <Table.Row>
                                 <Table.Cell>View Documents</Table.Cell>
                                 <Table.Cell><Modal trigger={<Button icon="download" content={obj.filename} onClick={(e)=>this.handleFileClick(e,obj.file)}></Button>  }>
-    <Modal.Header>Select a Photo</Modal.Header>
-    <Modal.Content>
+                                              
+                                           <Modal.Content>
       
       
-      <Embed active={true}
-                  icon='right circle arrow'
-                  placeholder='/images/image-16by9.png'
-                  url={obj.file}
-                />
-      
-    </Modal.Content>
-  </Modal></Table.Cell>
+                                    <Embed active={true}
+                                      icon='right circle arrow'
+                                      placeholder='/images/image-16by9.png'
+                                      url={obj.file}
+                                     />
+
+                                 </Modal.Content>
+                                  </Modal></Table.Cell>
                                 </Table.Row>
                             </Table.Body>
                             </Table>
-                            {/* <a target="_blank" rel="noreferrer noopener" data-qa="message_attachment_title_link" class="c-link c-message_attachment__title_link" href={obj.file}>{obj.filename}<span dir="auto"></span></a> */}
-                        
-                        </div>
-
-                        
+                                                   
+                        </div>               
 
                   
       {this.renderRedirect2()}
@@ -219,7 +258,7 @@ class VendorHome extends Component
                         <Table.Cell width={2}>Date</Table.Cell>
                         <Table.Cell width={2}>Due Date</Table.Cell>
                         <Table.Cell width={2}>Amount</Table.Cell>
-                        <Table.Cell width={2}>Payment Status</Table.Cell>
+                        <Table.Cell width={1}>Payment Status</Table.Cell>
                 </Table.Header>
             </Table>
 
@@ -227,7 +266,7 @@ class VendorHome extends Component
                 return (
                     
     
-                        <Table celled>
+                        <Table celled style={{border:'none'}}>
                     
                     
                   
@@ -238,7 +277,21 @@ class VendorHome extends Component
                     <Table.Cell width={2}>{obj1.date}</Table.Cell>
                     <Table.Cell width={2}>{obj1.duedate}</Table.Cell>
                     <Table.Cell width={2}>{obj1.amount}</Table.Cell>
-                    <Table.Cell width={2}>{obj1.status}</Table.Cell>
+                    <Table.Cell width={1}>{obj1.status}</Table.Cell>
+                    <Table.Cell style={{border:"hidden"}} textAlign="center" width={1}>
+              <Modal trigger={<Button inverted secondary icon="eye" circular></Button> }size='large'>
+              <Modal.Header></Modal.Header>
+              <Modal.Content>
+              <Embed active={true}
+                  icon='right circle arrow'
+                  placeholder='/images/image-16by9.png'
+                  url={obj1.invoicedoc}
+                />
+      
+    </Modal.Content>
+  </Modal></Table.Cell>
+           
+                    
                   
                   </Table.Row>
     
