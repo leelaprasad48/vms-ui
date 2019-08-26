@@ -15,9 +15,10 @@ class VendorHome extends Component
         this.state={
             InvoiceObject : undefined,
             VendorObject: undefined,
-            vpass:'',
-            vendornewpassword:'',
-            vendorconfirmpassword:'',
+            oldpassword:'',
+            newpassword:'',
+            confirmpassword:'',
+            vid:'',
           }
         
           const vmail=localStorage.getItem("vmail");
@@ -45,28 +46,11 @@ class VendorHome extends Component
               localStorage.removeItem('vmail')
               this.props.history.push('/')});
 
-              if(this.state.vendornewpassword == this.state.vendorconfirmpassword){
-              axios.put(URLs.baseURL+'/'+localStorage.getItem("vmail"),this.state,{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}})
-                .then(response => {
-                    console.log(response.status)
-                    //Success Case
-                    if(response.status==200)
-                    {
-                        alert("Successfully Password Changed")
-                       window.location.reload();   
-                    }
-                  
-                    //Failure Case
-                    else{
-                      alert("Failed");
-                    }
-                  })
-                }else{
-                  alert("Confirm Password is not matching with NewPassword");
-                }
-
+              
             }
 
+
+          
             state = {
                 redirect: false
               }
@@ -103,7 +87,47 @@ class VendorHome extends Component
               myChangeHandler = (event) => {
                 this.setState({[event.target.name]: event.target.value});
               }
-    
+
+
+              ChangePassword = (event,obj) =>{
+                event.preventDefault();
+                
+            
+                const vid=obj.vid;
+                const newpassword=this.state.newpassword;
+                const oldpassword=this.state.oldpassword;
+                const cred={
+                  vid,
+                  newpassword,
+                  oldpassword
+                }
+              //  console.log(cred)
+
+                if(this.state.newpassword === this.state.confirmpassword){
+                  //console.log(this.state.vid)
+                  axios.put(URLs.baseURL+'/vendor/changepassword',cred,{ headers: {Authorization :''+localStorage.getItem("jwtToken")}})
+                    .then(response => {
+                      //console.log(response.status)
+                    if(response.status==200)
+                      {
+                          alert("Successfully Password Changed")
+                        window.location.reload();   
+                      }
+                  
+                    
+                      else{
+                        alert("Failed");
+                      }
+                    })
+                  }else{
+                    alert("Confirm Password is not matching with NewPassword");
+                 }
+  
+              
+  
+              }
+  
+              
               
 
 
@@ -111,7 +135,7 @@ class VendorHome extends Component
             {
               let {VendorObject} = this.state;
               let {InvoiceObject} = this.state;
-
+          
               if(this.state.VendorObject=== undefined)
               {
                 return(
@@ -125,31 +149,7 @@ class VendorHome extends Component
               return(
 
                 <div>
-                    <Modal trigger={<Button circular inverted secondary content="Change Password" ></Button> } size='small'>
-                    <Modal.Actions>
-                    <p style={{textAlign:"center",fontSize:"30px",color:'teal'}}><b>Change Password</b>
-                      <div>
-                      
-                      <Form style={{marginLeft:'28%',width:'45%'}} size='small'>
-                        <Segment stacked>
-                            <Form.Input required type="password" fluid label='Current Password' labelPosition='left corner' name='vpass' icon='lock' iconPosition='left' placeholder='Current Password' onChange={this.myChangeHandler}/>         
-                            <Form.Input required type="password" fluid label='New Password' labelPosition='left corner' name='vendornewpassword' icon='lock' iconPosition='left' placeholder='New Password' onChange={this.myChangeHandler}/>  
-                            <Form.Input required type="password" fluid label='Confirm Password' icon='lock' name='vendorconfirmpassword' iconPosition='left' placeholder='Confirm Password' onChange={this.myChangeHandler}/>  
-                                   
-                            <Button animated color='teal' fluid size='large' onClick={this.componentDidMount}>
-                               <Button.Content visible>Submit</Button.Content>
-                                  <Button.Content hidden>
-                                    <Icon name='plus square' />
-                                  </Button.Content>
-                              </Button>
-                          </Segment>
-                        </Form>
-                      </div>
-                      </p>
-                   </Modal.Actions>
-                </Modal>
-
-
+                   
                     {this.renderRedirect()}
            <Segment>
             <Grid columns={2} relaxed='very'>
@@ -163,10 +163,34 @@ class VendorHome extends Component
                 </Divider>
 
                 {VendorObject && VendorObject.map(obj =>{
-
+                  
                     return(
+                      <div>  
+                      <Modal trigger={<Button circular inverted secondary content="Change Password" ></Button> } size='small'>
+                      <Modal.Actions>
+                      <p style={{textAlign:"center",fontSize:"30px",color:'teal'}}><b>Change Password</b>
+                        <div>
+                        
+                        <Form style={{marginLeft:'28%',width:'45%'}} size='small'>
+                          <Segment stacked>
+                              <Form.Input required type="password" fluid label='Current Password' labelPosition='left corner' name='oldpassword' icon='lock' iconPosition='left' placeholder='Current Password' onChange={this.myChangeHandler}/>         
+                              <Form.Input required type="password" fluid label='New Password' labelPosition='left corner' name='newpassword' icon='lock' iconPosition='left' placeholder='New Password' onChange={this.myChangeHandler}/>  
+                              <Form.Input required type="password" fluid label='Confirm Password' icon='lock' name='confirmpassword' iconPosition='left' placeholder='Confirm Password' onChange={this.myChangeHandler}/>  
+                                     
+                            <Button animated color='grey' fluid size='large' onClick={(e)=>this.ChangePassword(e,obj)}>
+                                 <Button.Content visible>Submit</Button.Content>
+                                    <Button.Content hidden>
+                                      <Icon name='plus square' />
+                                    </Button.Content>
+                                </Button>
+                            </Segment>
+                          </Form>
+                        </div>
+                        </p>
+                     </Modal.Actions>
+                  </Modal>
 
-                <div>           
+                         
                     <div>
                         <div align = "left" style={{ width: "70%", marginTop: "5%", marginLeft:"10%"}}>
     

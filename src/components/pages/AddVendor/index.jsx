@@ -4,23 +4,22 @@ import { Button, Divider, Form, Grid,Segment, Icon} from 'semantic-ui-react';
 import axios from 'axios';
 import FileBase64 from 'react-file-base64';
 import URLs from '../../../config';
+import  {entitytype,typeofservice,partnertype} from '../../../constants';
 
-
-const entitytype = [
-  { key: 1, text: 'Public Limited', value: 'Public Limited' },
-  { key: 2, text: 'Private Limited', value: 'Private Limited' },
-]
-const typeofservice = [
-    { key: 1, text: 'Food', value: 'Food' },
-    { key: 2, text: 'Electricity', value: 'Electricity' },
-    { key: 3, text: 'Water', value: 'Water' },
-    { key: 4, text: 'Wifi', value: 'Wifi' },
-]
-const partnertype = [
-    { key: 1, text: 'Domestic Partner', value: 'Domestic Partner' },
-    { key: 2, text: 'International Partner', value: 'International Partner' },
-]
-
+// const entitytype = [
+//   { key: 1, text: 'Public Limited', value: 'Public Limited' },
+//   { key: 2, text: 'Private Limited', value: 'Private Limited' },
+// ]
+// const typeofservice = [
+//     { key: 1, text: 'Food', value: 'Food' },
+//     { key: 2, text: 'Electricity', value: 'Electricity' },
+//     { key: 3, text: 'Water', value: 'Water' },
+//     { key: 4, text: 'Wifi', value: 'Wifi' },
+// ]
+// const partnertype = [
+//     { key: 1, text: 'Domestic Partner', value: 'Domestic Partner' },
+//     { key: 2, text: 'International Partner', value: 'International Partner' },
+// ]
 
 class AddVendor extends Component{
   
@@ -54,13 +53,12 @@ class AddVendor extends Component{
        this.setState({filename:files[0].name})
        this.setState({ file: files[0].base64 })
      }
-  
-
     mySubmitHandler = (event) => {
        event.preventDefault();
        if(this.state.filename!=null){
        axios.post(URLs.baseURL+'/vendor/save',this.state,{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}}).then((response)=> {
-       if(response.status==200){
+       console.log(response);
+        if(response.status==200){
         alert("post successful")
         this.setState(prevState => ({ visible: !prevState.visible }))
     
@@ -95,8 +93,7 @@ class AddVendor extends Component{
             <div>
                <div>
                
-                    <Divider horizontal><h1>Add Vendor</h1></Divider>
-                    
+                    <Divider horizontal><h1>Add Vendor</h1></Divider> 
                <Grid.Column >
                  <Form  success onSubmit={this.mySubmitHandler} >
                       <Form.Group >
@@ -113,7 +110,8 @@ class AddVendor extends Component{
                                               <Form.Input style={{width:"100%"}} required name='pan' type='text' pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" label='PAN No' placeholder='PAN No' onChange={this.myChangeHandler} />
                                       </Grid.Column> 
                                       <Grid.Column>          
-                                               <br></br>
+                                              
+                                              <br></br>
                                               <br></br>
                                               <br></br>
                                               <Form.Input style={{width:"100%"}} required name='cpname' type='text' label='Contact Person Name' placeholder='Contact Person Name' onChange={this.myChangeHandler}/>
@@ -145,9 +143,7 @@ class AddVendor extends Component{
                                         <Icon name='angle double right' />
                                     </Button.Content>
                                   </Button>
-                                  </div>
-                              
-                                
+                                  </div>                          
                              </div>
                             </Form.Group>
                          </Form>
@@ -157,6 +153,5 @@ class AddVendor extends Component{
           );
     }
 }
-
 
 export default AddVendor

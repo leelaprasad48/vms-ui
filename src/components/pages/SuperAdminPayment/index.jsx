@@ -22,7 +22,7 @@ class SuperAdminPayment extends Component{
                 
       }
         componentDidMount(){
-            axios.get(URLs.baseURL+'/invoice/pendingone',).then((adminData)=>{
+            axios.get(URLs.baseURL+'/invoice/pendingone',{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}}).then((adminData)=>{
             this.setState({adminObject: adminData.data})
             console.log(this.state.adminObject)
             })
@@ -33,7 +33,7 @@ class SuperAdminPayment extends Component{
           event.preventDefault();
           console.log(rowid)
          
-          axios.put(URLs.baseURL+'/invoice/updatepayment'+rowid+'/'+localStorage.getItem("amail"),{},)
+          axios.put(URLs.baseURL+'/invoice/updatepayment/'+rowid,{},{ headers: {Authorization :''+localStorage.getItem("jwtTokenAdmin")}})
           .then(response => {
             console.log(response.status)
             if(response.status==200)
